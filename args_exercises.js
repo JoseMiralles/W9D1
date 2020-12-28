@@ -81,4 +81,71 @@ class Cat {
   // Pavlov says meow to me!
   // true
 
-  
+  function curry(numArgs) {
+    const nums = [];
+    // let count = numArgs;
+    return function _curriedAdd (num1) {
+      nums.push(num1);
+      // count--;
+      if (nums.length === numArgs) {
+      // if (count === 0) {
+        const result = nums.reduce((acc, ele) => {
+          return acc + ele;
+        })
+        console.log(result);
+      } else {
+        return _curriedAdd;
+      }
+    }
+  }
+
+const addition = curry(4);
+addition(5)(30)(20)(1); // => 56
+
+//using apply
+Function.prototype.curry = function(numArgs) {
+  const nums = [];
+  const ogFunc = this;
+  return function _curried (arg) {
+    nums.push(arg);
+    if (nums.length === numArgs) {
+      return ogFunc.apply(null, nums) //context part doesn't really matter because the function it's applied on does not use "this";
+    } else {
+      return _curried;
+    }
+  }
+}
+
+//using "..."
+Function.prototype.curryS = function (numArgs) {
+  const nums = [];
+  const ogFunc = this;
+  return function _curried(arg) {
+    nums.push(arg);
+    if (nums.length === numArgs) {
+      return ogFunc(...nums) 
+    } else {
+      return _curried;
+    }
+  }
+}
+
+
+function sumThree(num1, num2, num3) {
+  console.log(this);
+  return num1 + num2 + num3;
+}
+//console.log(sumThree(4, 20, 6)); // == 30
+
+// you'll write `Function#curry`!
+let f1 = sumThree.curryS(3); // tells `f1` to wait until 3 arguments are given before running `sumThree`
+f1 = f1(4); // [Function]
+f1 = f1(20); // [Function]
+f1 = f1(6); // = 30
+console.log(f1);
+
+let f2 = sumThree.curry(3); // tells `f1` to wait until 3 arguments are given before running `sumThree`
+f2 = f2(4); // [Function]
+f2 = f2(20); // [Function]
+f2 = f2(6); // = 30
+console.log(f2);
